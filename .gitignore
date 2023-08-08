@@ -47,3 +47,5 @@ ipch
 .vscode/*
 
 /Hydra/build/
+*~
+/Hydra/__pycache__/
