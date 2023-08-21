@@ -49,3 +49,4 @@ ipch
 /Hydra/build/
 *~
 /Hydra/__pycache__/
+/Hydra/debug/
