@@ -50,3 +50,4 @@ ipch
 *~
 /Hydra/__pycache__/
 /Hydra/debug/
+*.h#
