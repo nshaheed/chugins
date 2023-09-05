@@ -51,3 +51,7 @@ ipch
 /Hydra/__pycache__/
 /Hydra/debug/
 *.h#
+Hydra/a.cpp
+
+Hydra/examples/outputs/*
+Hydra/tests/outputs/*
