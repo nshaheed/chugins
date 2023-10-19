@@ -898,12 +898,12 @@ public:
         t_CKBOOL (CK_DLL_CALL * const get_mvar_string)( Object object, const char * name, String & value );
         t_CKBOOL (CK_DLL_CALL * const get_mvar_object)( Object object, const char * name, Object & value );
         // function pointer for set_string()
-        t_CKBOOL (* const set_string)( CK_DL_API, String string, const char * value );
-        // array4 operations
-        t_CKBOOL (* const array4_size)( CK_DL_API, Array4 array, t_CKINT & value );
-        t_CKBOOL (* const array4_push_back)( CK_DL_API, Array4 array, t_CKUINT value );
-        t_CKBOOL (* const array4_get_idx)( CK_DL_API, Array4 array, t_CKINT idx, t_CKUINT & value );
-        t_CKBOOL (* const array4_get_key)( CK_DL_API, Array4 array, const std::string & key, t_CKUINT & value );
+        t_CKBOOL (CK_DLL_CALL * const set_string)( String string, const char * value );
+        // array_int operations
+        t_CKBOOL (CK_DLL_CALL * const array_int_size)( ArrayInt array, t_CKINT & value );
+        t_CKBOOL (CK_DLL_CALL * const array_int_push_back)( ArrayInt array, t_CKUINT value );
+        t_CKBOOL (CK_DLL_CALL * const array_int_get_idx)( ArrayInt array, t_CKINT idx, t_CKUINT & value );
+        t_CKBOOL (CK_DLL_CALL * const array_int_get_key)( ArrayInt array, const std::string & key, t_CKUINT & value );
     } * const object;
 
     // access to host-side chuck types
