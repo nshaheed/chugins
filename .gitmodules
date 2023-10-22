@@ -7,3 +7,6 @@
 [submodule "rave/nn_tilde"]
 	path = rave/nn_tilde
 	url = https://github.com/acids-ircam/nn_tilde.git
+[submodule "chuck-api"]
+	path = chuck-api
+	url = git@github.com:ccrma/cheaders.git
