@@ -143,14 +143,11 @@ public:
     t_CKBOOL is_static; // 1.4.1.0
     // native
     t_CKUINT native_func;
-    // is ctor?
-    t_CKUINT native_func_type;
+    // what kind of native func?
+    ae_FuncPointerKind native_func_kind;
 
     // filename this code came from (added 1.3.0.0)
     std::string filename;
-
-    // native func types
-    enum { NATIVE_UNKNOWN, NATIVE_CTOR, NATIVE_DTOR, NATIVE_MFUN, NATIVE_SFUN };
 };
 
 
@@ -591,6 +588,9 @@ public: // running the machine
     t_CKBOOL compute();
     // abort current running shred
     t_CKBOOL abort_current_shred();
+    // get currently executing shred | 1.5.1.8 (ge) now in VM, in addition to shreduler
+    // NOTE this can only be non-NULL during a Chuck_VM::compute() cycle
+    Chuck_VM_Shred * get_current_shred() const;
 
 public: // invoke functions
     t_CKBOOL invoke_static( Chuck_VM_Shred * shred );
@@ -635,7 +635,7 @@ public:
 
 public:
     // subscribe shreds watcher callback | 1.5.1.5
-    void subscribe_watcher( f_shreds_watcher cb, t_CKUINT options, void * data = NULL );
+    void subscribe_watcher( f_shreds_watcher cb, t_CKUINT options, void * userdata = NULL );
     // notify watchers | 1.5.1.5
     void notify_watchers( ckvmShredsWatcherFlag which, Chuck_VM_Shred * shred,
                           std::list<Chuck_VM_Shreds_Watcher> & v );
@@ -823,7 +823,7 @@ struct Chuck_Msg
 
 //-----------------------------------------------------------------------------
 // name: struct Chuck_VM_MFunInvoker | 1.5.1.5 (ge)
-// desc: construct for calling chuck-defined member functions from c++,
+// desc: aparatus for calling chuck-defined member functions from c++,
 //       either from VM execution or outside the VM execution context
 //-----------------------------------------------------------------------------
 struct Chuck_VM_MFunInvoker
@@ -840,19 +840,51 @@ public:
                     Chuck_VM * vm, Chuck_VM_Shred * caller );
     // invoke the member function
     Chuck_DL_Return invoke( Chuck_Object * obj,
-                            const std::vector<Chuck_DL_Arg> & args );
+                            const std::vector<Chuck_DL_Arg> & args,
+                            Chuck_VM_Shred * parent_shred );
     // clean up
     void cleanup();
 
 public:
     // dedicated shred to call the mfun on
-    Chuck_VM_Shred * shred;
+    Chuck_VM_Shred * invoker_shred;
     // instructions for args (to be filled on invoke)
     std::vector<Chuck_Instr *> instr_args;
     // instruction to update on invoke: pushing this pointer
     Chuck_Instr_Reg_Push_Imm * instr_pushThis;
     // instruction to update on invoke: pushing the var to receive return
     Chuck_Instr_Reg_Push_Imm * instr_pushReturnVar;
+};
+
+
+
+
+//-----------------------------------------------------------------------------
+// name: struct Chuck_VM_DtorInvoker | 1.5.2.0 (ge)
+// desc: aparatus for calling chuck-defined @destruct from c++,
+//       typically called for Object cleanup
+//-----------------------------------------------------------------------------
+struct Chuck_VM_DtorInvoker
+{
+public:
+    // constructor
+    Chuck_VM_DtorInvoker();
+    // destructor
+    ~Chuck_VM_DtorInvoker();
+
+public:
+    // set up the invoker; needed before invoke()
+    t_CKBOOL setup( Chuck_Func * func, Chuck_VM * vm );
+    // invoke the member function
+    void invoke( Chuck_Object * obj, Chuck_VM_Shred * parent_shred = NULL );
+    // clean up
+    void cleanup();
+
+public:
+    // dedicated shred to call the dtor on, since this could be running "outside of chuck time"
+    Chuck_VM_Shred * invoker_shred;
+    // instruction to update on invoke: pushing this pointer
+    Chuck_Instr_Reg_Push_Imm * instr_pushThis;
 };
 
 
