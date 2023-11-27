@@ -29,5 +29,7 @@ jobs:
     - name: Add msbuild to PATH
       if: ${{ matrix.os == 'windows-latest' }}
       uses: microsoft/setup-msbuild@v1.1
+    - name: make??
+      run: make --help
     - name: make
       run: make ${{ matrix.rule }}
